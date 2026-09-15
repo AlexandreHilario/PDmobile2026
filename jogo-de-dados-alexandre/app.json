@@ -44,6 +44,12 @@
         "projectId": "b7966877-bc7a-4340-af5c-6d3621f96f93"
       }
     },
-    "owner": "anacsilvabrs-team"
+    "owner": "anacsilvabrs-team",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/b7966877-bc7a-4340-af5c-6d3621f96f93"
+    }
   }
 }
