@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "Alexandre • Portfolio",
+    "slug": "portfolio-mobile",
+    "owner": "anacsilvabrs-team",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "alexandreportfolio",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "bundleIdentifier": "com.alexandrevitor.portfolio"
+    },
+    "android": {
+      "package": "com.alexandrevitor.portfolio"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "af81c477-d60d-4881-b19d-82209aeadcd0"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    }
+  }
+}

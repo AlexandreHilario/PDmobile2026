@@ -1,0 +1,6 @@
+{
+  "Profile": [{ "name": "Alexandre Vitor", "role": "Desenvolvedor Full Stack", "bio": "Escreva sua apresentação aqui.", "location": "Brasil", "skills": ["React Native", "Java", "React"], "order": 1 }],
+  "Education": [{ "title": "Sua formação", "organization": "Sua instituição", "period": "2025 — atual", "description": "Descreva sua formação real.", "technologies": ["Mobile", "Web"], "order": 1 }],
+  "Experience": [{ "title": "Sua atuação", "organization": "Empresa ou projeto acadêmico", "period": "2026 — atual", "description": "Descreva responsabilidades e resultados reais.", "technologies": ["React"], "order": 1 }],
+  "Project": [{ "title": "Portfolio Mobile", "description": "Currículo com Back4App, favoritos persistentes e busca.", "technologies": ["React Native", "Expo", "Back4App"], "order": 1 }]
+}
