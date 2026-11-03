@@ -14,48 +14,57 @@ Copy-Item .env.example .env
 npm start
 ```
 
-Abra o QR no Expo Go compatível com o SDK 57. Computador e celular precisam estar na mesma rede. Alternativa: `npx expo start --tunnel`. Android com emulador aberto: `npm run android`.
+Abra o QR no Expo Go compatível com o SDK 58. Computador e celular precisam estar na mesma rede. Alternativa: `npx expo start --tunnel`. Android com emulador aberto: `npm run android`.
 
-Sem credenciais, o app exibe **Demonstração** com dados de exemplo. A formação de exemplo usa o portfólio web existente como referência; revise todos os dados antes da entrega. Com as duas credenciais preenchidas, o app consulta exclusivamente as quatro classes abaixo; falhas aparecem com botão para tentar novamente, preservando a última carga da sessão ou os exemplos. Apenas favoritos persistem entre sessões.
+Sem credenciais, o app exibe **Demonstração** com dados de exemplo. Com as credenciais preenchidas, consulta diretamente as tabelas do Back4App no mesmo formato do projeto `aos-2026-2/curriculum-api`, sem chamar essa API. Falhas preservam a última carga da sessão ou os exemplos e exibem um botão para tentar novamente. Apenas favoritos persistem entre sessões.
 
-## Back4App
+## Back4App: conexão direta com as tabelas existentes
 
-1. Crie um app no Back4App e abra Database. Crie as classes `Profile`, `Education`, `Experience` e `Project` (nomes exatos, respeitando maiúsculas).
-2. Cadastre os campos conforme a tabela. `objectId` é gerado pelo Parse. `order` é Number e ordena os registros (1, 2, 3...). Arrays devem conter strings.
-3. Em **Class Level Permissions**, permita `Find` e `Get` públicos nessas classes de currículo. Mantenha `Create`, `Update`, `Delete` e `Add Field` restritos. ACL de cada registro deve permitir leitura pública. Edite pelo dashboard.
-4. Em App Settings → Security & Keys, copie **Application ID** e **REST API Key** para `.env`. Nunca use a Master Key no aplicativo.
+O app usa a API REST do próprio Back4App, sem servidor intermediário. A pasta curriculum-api foi consultada somente como referência de schema e não foi alterada. Não execute o seed daquele projeto para configurar o mobile.
 
-| Classe | Campos String | Campos Array | Campo Number |
-| --- | --- | --- | --- |
-| Profile | name, role, bio, location, email (opcional), github (opcional) | skills | order |
-| Education | title, organization, period, description | technologies | order |
-| Experience | title, organization, period, description | technologies | order |
-| Project | title, description, url (opcional, https) | technologies | order |
+| Classe | Campos utilizados | Relação |
+| --- | --- | --- |
+| Person | nome, email, telefone, cidade, resumo, linkedin, github | objectId identifica o currículo |
+| Education | instituicao, curso, nivel, inicio, fim, descricao | pessoa: Pointer para Person |
+| Experience | empresa, cargo, inicio, fim, descricao | pessoa: Pointer para Person |
+| Project | nome, descricao, url, tecnologias (Array de strings) | pessoa: Pointer para Person |
 
-Cadastre um perfil. As experiências e os projetos podem ter vários registros. `backend/seed.json` contém exemplos agrupados por classe para cadastro; não importe o arquivo inteiro como uma única classe. Preencha seus dados reais, e-mail e URL do GitHub. Listas vazias têm mensagens próprias. A consulta lê até 1.000 registros por classe.
+As datas inicio/fim no schema da API são textos AAAA-MM-DD; o mobile exibe MM/AAAA e considera fim ausente como Atual. O cargo da experiência mais recente aparece na Home. As habilidades são extraídas das tecnologias dos projetos. Formação usa nivel como etiqueta. Não são esperados campos ingleses como title, description ou skills no banco.
+
+Preencha no .env o Application ID e EXPO_PUBLIC_BACK4APP_MASTER_KEY do mesmo app Back4App. A Master Key tem prioridade sobre a REST API Key. Essa configuração foi solicitada explicitamente para este trabalho: a chave administrativa é incorporada ao bundle e pode ser extraída de um aplicativo distribuído.
 
 ```dotenv
 EXPO_PUBLIC_BACK4APP_APP_ID=seu_application_id
-EXPO_PUBLIC_BACK4APP_REST_API_KEY=sua_rest_api_key
+EXPO_PUBLIC_BACK4APP_MASTER_KEY=sua_master_key
+EXPO_PUBLIC_BACK4APP_REST_API_KEY=sua_rest_api_key_opcional
 EXPO_PUBLIC_BACK4APP_SERVER_URL=https://parseapi.back4app.com
-EXPO_OWNER=slug-da-organizacao-do-professor
-EXPO_PUBLIC_EAS_PROJECT_ID=uuid-do-projeto-expo
+EXPO_OWNER=anacsilvabrs-team
+EXPO_PUBLIC_EAS_PROJECT_ID=uuid_do_portfolio
 ```
 
-As variáveis `EXPO_PUBLIC_*` são incorporadas ao app e são visíveis no cliente. A proteção das escritas deve estar nas permissões do Back4App. `.env` está no `.gitignore`. Reinicie com `npx expo start --clear` após alterar as variáveis.
+Não é necessário configurar Person ID. O app seleciona automaticamente a primeira Person por createdAt/objectId e usa o ID retornado para filtrar os registros relacionados. Havendo vários currículos, será exibido o primeiro cadastrado. As consultas dos filhos usam paginação de 100 registros, até 10.000 por seção.
+
+**Permissões de leitura:** usando Master Key, o app consegue ler registros privados. Se a chave não estiver preenchida, usa REST API Key, que respeita as permissões de classe e ACL. O cliente faz somente GET; a Master Key, contudo, tem poderes administrativos além dessas leituras. Nenhuma permissão ou registro foi alterado por este projeto.
+
+Os EXPO_PUBLIC_* são incorporados ao bundle. As escritas devem continuar restritas nas permissões do Back4App; este app faz somente GET. O arquivo backend/seed.json é apenas um exemplo do formato correto, não é executado automaticamente. Para relacionar registros manualmente, use um Pointer real para o objectId da Person; não crie um campo pessoaId String no lugar do Pointer pessoa.
+
+Reinicie com `npx expo start --clear` após alterar o .env.
 
 ## Verificação
 
 ```powershell
 npm run typecheck
 npm test
+npm run test:backend
 npm run check
 npx expo export --platform android
 ```
 
 No celular: navegue pelas cinco abas; pesquise `React`; marque um projeto; filtre favoritos; feche e reabra para conferir persistência; desmarque; teste um termo inexistente; teste compartilhar; configure Back4App, confirme o indicador `Back4App` e altere um registro no dashboard antes de puxar para atualizar. Teste credenciais inválidas para conferir o erro e a recuperação.
 
-Verificado na criação: TypeScript, cinco testes de integração com respostas HTTP simuladas, compatibilidade das dependências pelo Expo e exportação do bundle Android passaram. Não houve execução em celular/emulador nem conexão real com Back4App por falta de credenciais. `npm audit` identificou 16 alertas na árvore do SDK 57 (5 altos); algumas correções propostas exigem migração para SDK 58. Não foi aplicada atualização forçada que misture versões incompatíveis do Expo.
+A migração para SDK 58 atualiza Expo, React Native, React e módulos Expo em conjunto. Use Node.js 22.13+ (linha 22) ou 24.3+ (linha 24). Na revisão completa: TypeScript, 20 testes automatizados, Expo Doctor (20/20) e exportações Android/iOS/web passaram. `test:backend` faz somente leitura real, usa o .env e depende de rede; falha se nenhuma pessoa for encontrada. A instalação reportou 12 alertas moderados na árvore de dependências, sem alertas altos ou críticos. Consulte [o relatório de testes](TEST_REPORT.md) para resultados, interações realizadas e pendências reais.
+
+Se o Metro estava aberto com o SDK anterior, encerre com `Ctrl+C` e execute `npx expo start --clear`. Escaneie o novo QR no Expo Go SDK 58. Atualizações OTA publicadas anteriormente precisam ser publicadas novamente com o novo SDK.
 
 ## Entrega: GitHub, Expo e vídeo
 
@@ -70,7 +79,7 @@ Este projeto está dentro do repositório `PDmobile2026`. Na raiz dele, revise `
 3. Execute `npx expo install expo-updates` e `npx eas-cli@latest update:configure`. Confira owner, projectId, updates.url e a política `sdkVersion` já preparada no config.
 4. No dashboard EAS, cadastre as variáveis `EXPO_PUBLIC_BACK4APP_*` no ambiente **preview**, além de `EXPO_PUBLIC_EAS_PROJECT_ID` e `EXPO_OWNER` com os mesmos valores locais. As variáveis usadas no bundle devem existir no ambiente de publicação.
 5. Publique: `npx eas-cli@latest update --branch preview --message "Entrega portfolio mobile" --environment preview`.
-6. Abra a atualização no dashboard Expo e use Preview para obter o link/QR. **Abra esse QR no Expo Go do celular e confirme o funcionamento antes de enviar.** O QR do `npm start` depende do computador ligado e não substitui o link publicado da entrega. Verifique a compatibilidade da versão do Expo Go com SDK 57 em https://expo.dev/go.
+6. Abra a atualização no dashboard Expo e use Preview para obter o link/QR. **Abra esse QR no Expo Go do celular e confirme o funcionamento antes de enviar.** O QR do `npm start` depende do computador ligado e não substitui o link publicado da entrega. Verifique a compatibilidade da versão do Expo Go com SDK 58 em https://expo.dev/go.
 
 O projeto ainda precisa de credenciais, vínculo com a organização e publicação para ter um link real de entrega. Um APK interno pode ser criado com `npx eas-cli@latest build --profile preview --platform android`, mas não substitui o QR do Expo Go pedido na atividade.
 

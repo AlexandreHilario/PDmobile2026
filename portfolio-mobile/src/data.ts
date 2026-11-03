@@ -1,5 +1,5 @@
 export type Entry = { objectId: string; title: string; organization?: string; period?: string; description: string; technologies: string[]; url?: string };
-export type Profile = { name: string; role: string; bio: string; location: string; email?: string; github?: string; skills: string[] };
+export type Profile = { name: string; role: string; bio: string; location: string; email?: string; github?: string; linkedin?: string; phone?: string; skills: string[] };
 export type Portfolio = { profile: Profile; education: Entry[]; experience: Entry[]; projects: Entry[] };
 export const demo: Portfolio = {
   profile: { name: 'Alexandre Vitor', role: 'Desenvolvedor Full Stack', bio: 'Transformando ideias em experiências digitais. Interesse em aplicações web, mobile e APIs bem construídas.', location: 'Brasil', skills: ['React Native', 'TypeScript', 'Java', 'React', 'APIs REST'] },

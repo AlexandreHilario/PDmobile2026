@@ -1,6 +1,53 @@
 {
-  "Profile": [{ "name": "Alexandre Vitor", "role": "Desenvolvedor Full Stack", "bio": "Escreva sua apresentação aqui.", "location": "Brasil", "skills": ["React Native", "Java", "React"], "order": 1 }],
-  "Education": [{ "title": "Sua formação", "organization": "Sua instituição", "period": "2025 — atual", "description": "Descreva sua formação real.", "technologies": ["Mobile", "Web"], "order": 1 }],
-  "Experience": [{ "title": "Sua atuação", "organization": "Empresa ou projeto acadêmico", "period": "2026 — atual", "description": "Descreva responsabilidades e resultados reais.", "technologies": ["React"], "order": 1 }],
-  "Project": [{ "title": "Portfolio Mobile", "description": "Currículo com Back4App, favoritos persistentes e busca.", "technologies": ["React Native", "Expo", "Back4App"], "order": 1 }]
+  "Person": [
+    {
+      "nome": "Seu nome",
+      "email": "voce@example.com",
+      "cidade": "Sua cidade",
+      "resumo": "Sua apresentação"
+    }
+  ],
+  "Education": [
+    {
+      "pessoa": {
+        "__type": "Pointer",
+        "className": "Person",
+        "objectId": "OBJECT_ID_DA_PERSON"
+      },
+      "instituicao": "Sua instituição",
+      "curso": "Seu curso",
+      "nivel": "Graduação",
+      "inicio": "2025-02-01",
+      "descricao": "Sua formação"
+    }
+  ],
+  "Experience": [
+    {
+      "pessoa": {
+        "__type": "Pointer",
+        "className": "Person",
+        "objectId": "OBJECT_ID_DA_PERSON"
+      },
+      "empresa": "Sua empresa ou projeto acadêmico",
+      "cargo": "Seu cargo",
+      "inicio": "2026-01-01",
+      "descricao": "Sua atuação"
+    }
+  ],
+  "Project": [
+    {
+      "pessoa": {
+        "__type": "Pointer",
+        "className": "Person",
+        "objectId": "OBJECT_ID_DA_PERSON"
+      },
+      "nome": "Portfolio Mobile",
+      "descricao": "Currículo mobile com conexão direta ao Back4App e favoritos persistentes.",
+      "tecnologias": [
+        "React Native",
+        "Expo",
+        "TypeScript"
+      ]
+    }
+  ]
 }
